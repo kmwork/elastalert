@@ -119,7 +119,7 @@ class ElastAlerter(object):
             )
 
         if self.verbose or self.debug:
-            elastalert_logger.setLevel(logging.INFO)
+            elastalert_logger.setLevel(logging.DEBUG)
 
         if self.debug:
             elastalert_logger.info(
@@ -128,11 +128,11 @@ class ElastAlerter(object):
             )
 
         if not self.args.es_debug:
-            logging.getLogger('elasticsearch').setLevel(logging.WARNING)
+            logging.getLogger('elasticsearch').setLevel(logging.DEBUG)
 
         if self.args.es_debug_trace:
             tracer = logging.getLogger('elasticsearch.trace')
-            tracer.setLevel(logging.INFO)
+            tracer.setLevel(logging.DEBUG)
             tracer.addHandler(logging.FileHandler(self.args.es_debug_trace))
 
         self.conf = load_conf(self.args)
@@ -161,6 +161,7 @@ class ElastAlerter(object):
         self.replace_dots_in_field_names = self.conf.get('replace_dots_in_field_names', False)
         self.thread_data.num_hits = 0
         self.thread_data.num_dupes = 0
+        self.thread_data.alerts_sent = 0  # add kostya
         self.scheduler = BackgroundScheduler()
         self.string_multi_field_name = self.conf.get('string_multi_field_name', False)
         self.add_metadata_alert = self.conf.get('add_metadata_alert', False)
@@ -1156,6 +1157,7 @@ class ElastAlerter(object):
             rule['initial_starttime'] = self.starttime
         self.wait_until_responsive(timeout=self.args.timeout)
         self.running = True
+        elastalert_logger.debug("[kostya] Starting up")
         elastalert_logger.info("Starting up")
         self.scheduler.add_job(self.handle_pending_alerts, 'interval',
                                seconds=self.run_every.total_seconds(), id='_internal_handle_pending_alerts')

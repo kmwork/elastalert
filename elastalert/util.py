@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import sys
+import tzlocal
 
 import dateutil.parser
 import pytz
@@ -14,7 +15,9 @@ from . import ElasticSearchClient
 from .auth import Auth
 
 logging.basicConfig()
+logging.root.setLevel(logging.DEBUG)
 elastalert_logger = logging.getLogger('elastalert')
+elastalert_logger.setLevel(logging.DEBUG)
 
 
 def get_module(module_name):
@@ -151,9 +154,12 @@ def ts_to_dt(timestamp):
 
 
 def dt_to_ts(dt):
+
     if not isinstance(dt, datetime.datetime):
-        logging.warning('Expected datetime, got %s' % (type(dt)))
-        return dt
+        # https://stackoverflow.com/questions/3682748/converting-unix-timestamp-string-to-readable-date
+        # logging.debug('[Kostya-Hack]Expected datetime, got %s' % (type(dt)))
+        unix_timestamp = float(dt)/1000
+        dt = datetime.datetime.utcfromtimestamp(unix_timestamp)
     ts = dt.isoformat()
     # Round microseconds to milliseconds
     if dt.tzinfo is None:

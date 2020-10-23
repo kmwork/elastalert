@@ -119,7 +119,7 @@ def configure_logging(args, conf):
     # (but don't touch it if it is already set to INFO or below by config)
     if args.verbose or args.debug:
         if elastalert_logger.level > logging.INFO or elastalert_logger.level == logging.NOTSET:
-            elastalert_logger.setLevel(logging.INFO)
+            elastalert_logger.setLevel(logging.DEBUG)
 
     if args.debug:
         elastalert_logger.info(
@@ -128,9 +128,9 @@ def configure_logging(args, conf):
         )
 
     if not args.es_debug and 'logging' not in conf:
-        logging.getLogger('elasticsearch').setLevel(logging.WARNING)
+        logging.getLogger('elasticsearch').setLevel(logging.DEBUG)
 
     if args.es_debug_trace:
         tracer = logging.getLogger('elasticsearch.trace')
-        tracer.setLevel(logging.INFO)
+        tracer.setLevel(logging.DEBUG)
         tracer.addHandler(logging.FileHandler(args.es_debug_trace))

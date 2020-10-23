@@ -20,7 +20,7 @@ from elastalert.util import lookup_es_key
 from elastalert.util import ts_now
 from elastalert.util import ts_to_dt
 
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger('elasticsearch').setLevel(logging.WARNING)
 
 """
